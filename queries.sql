@@ -1,111 +1,151 @@
-DROP TABLE IF EXISTS products;
-CREATE TABLE products (
-  idProduct INT,
-  nameProduct VARCHAR(100),
-  categoryProduct VARCHAR(100),
-  quantityProduct INT,
-  priceProduct FLOAT(10,2),
-  order_date DATE
-  
-);
-
-INSERT INTO products VALUES 
-	(1, "Television", "Eletronic", 1500, 5000.00, "2020-05-10"),
-    (2, "Toaster", "Eletronic", 2500, 15000.00, "2020-05-11"),
-    (3, "Notebook", "Eletronic", 3000, 3800.00, "2020-05-10"),
-    (4, "Paper Book", "Stationery", 15000, 10.00,"2020-05-12"), 
-    (5, "Digital Blackboard", "Stationery", 1000, 15000.50, "2020-05-11"),
-    (6, "Battery", "Stationery", 1000, 25.75, "2020-05-12"),
-    (7, "Controller", "Game", 1000, 55.75, "2020-05-11"),
-    (8, "God of War 5", "Game", 1500, 35.00, "2020-05-10"),
-    (9, "IPhone", "Eletronic", 1500, 1335.00, "2020-05-13"),
-    (10, "Game Chair", "Office", 1000, 800.00, "2020-05-10");
-
-
-SELECT order_date 
- , SUM(CASE WHEN categoryProduct = "Eletronic" THEN priceProduct
-       ELSE "-"
-       END) AS "Eletronic Amount"
- , SUM(CASE WHEN categoryProduct = "Stationery" THEN priceProduct
-       ELSE "-"
-       END) AS "Stationery Amount"
- , SUM(CASE WHEN categoryProduct = "Game" THEN priceProduct
-       ELSE "-"
-       END) AS "Game Amount"
- , SUM(CASE WHEN categoryProduct = "Office" THEN priceProduct
-       ELSE "-"
-       END) AS "Office Amount"
- FROM products
- GROUP BY 1
- ;
-
-
-
-
--------
-
-
-
 USE banco;
 -- DESCRIBE categorias; #df.info() do python
 DESCRIBE produtos;
 
-SELECT COUNT(*) AS "Registros", SUM(Preco_unit) AS "R$ Unitário"
-FROM produtos; 
+SELECT * FROM categorias;
+SELECT * FROM clientes;
+DESC clientes;
+SELECT * FROM locais;
+SELECT * FROM lojas;
+SELECT * FROM pedidos;
+SELECT * FROM produtos;
 
-SELECT Sexo, COUNT(*) AS "Registros"
-FROM clientes
-GROUP BY Sexo;
-
+-- uso do WHERE
+/* Aqui conto todos os registros dos clientes do sexo Masculino, que possuem renda anual maior que 60000 e seja */
 SELECT 
-	Marca_Produto AS "Marca", 
-    COUNT(*) AS "Registros"
-FROM produtos
-GROUP BY Marca_Produto
-ORDER BY COUNT(*) DESC;
+		Nome,
+        Sobrenome,
+        Email,
+        Telefone,
+		Sexo
+FROM clientes
+WHERE 
+	Renda_Anual > 60000
+    AND Sexo = "M"
+	AND Qtd_Filhos >= 1
+GROUP BY Nome, Sobrenome, Email, Telefone, Sexo;
 
 SELECT
-	COUNT(*) AS "Registros",
-    ID_Loja AS "Loja",
- 	SUM(Receita_Venda) AS "Receita Total",
+	Nome,
+    Telefone,
+	Escolaridade,
+    Qtd_Filhos
+FROM clientes
+WHERE
+	Escolaridade = "Pós-graduado"
+    AND Qtd_Filhos BETWEEN 2 AND 3
+;
+
+SELECT
+	Nome,
+    Sobrenome,
+    Telefone,
+	Escolaridade,
+    Email
+FROM clientes
+WHERE
+	-- Apenas emails com domínio gmail e possuem entre 2 e 3 filhos
+	Email LIKE "%@gmail%"
+    AND Qtd_Filhos BETWEEN 2 AND 3 AND Renda_Anual > 50000
+;
+
+SELECT
+	Nome,
+    Sobrenome,
+    Telefone,
+    Email,
+	Estado_Civil AS "Estado Civil"
+FROM clientes
+WHERE 
+	Escolaridade IN (
+		"Pós-graduado",
+        "Graduação"
+        )
+	AND Estado_Civil = "C"
+;
+
+-- uso do SUM
+SELECT * FROM pedidos;
+
+SELECT 
+	EXTRACT(MONTH FROM Data_Venda) AS "Mês da Venda",
+    SUM(Receita_Venda) AS "Receita Total",
+    AVG(Receita_Venda) AS "Receita Médida",
     SUM(Custo_Venda) AS "Custo Total"
 FROM pedidos
-GROUP BY ID_Loja
-ORDER BY SUM(Receita_Venda) DESC;
+GROUP BY 1
+ORDER BY 1
+;
+
+-- uso do JOIN
+-- Clientes e Pedidos
+SELECT * FROM clientes;
+SELECT * FROM pedidos;
+DESC pedidos;
+   
+    
+SELECT 
+	ID_Cliente,
+	Receita_Venda 
+FROM pedidos
+WHERE ID_Cliente = 16;
+
 
 SELECT 
-	COUNT(*) AS "Registros Totais na Tabela de Clientes",
-    COUNT(Telefone) AS "Telefones Registrados",
-    COUNT(DISTINCT Sexo) AS "# Registros por Sexo",
-    COUNT(DISTINCT Escolaridade) AS "# Registros por Escolaridade",
-    SUM(Renda_Anual) AS "Renda Anual Total",
-    AVG(Renda_Anual) AS "Média Anual",
-    MIN(Renda_Anual) AS "Renda Mínima",
-    MAX(Renda_Anual) AS "Renda Máxima"
-FROM clientes;
+	c.ID_Cliente
+	,c.Nome
+    , c.Sobrenome
+    , c.Renda_Anual AS "Renda Anual"
+    , p.Receita_Venda AS "Venda"
+FROM clientes c
+	INNER JOIN pedidos p
+		ON c.ID_Cliente = p.ID_Cliente
+GROUP BY c.ID_Cliente, c.Nome, c.Sobrenome, c.Renda_Anual, 
+		 p.Receita_Venda
+ORDER BY Renda_Anual DESC
+;
 
-SELECT
-	Escolaridade,
-    COUNT(Escolaridade) AS "Contagem Escolaridade",
-	COUNT(DISTINCT Escolaridade) AS "Registros únicos"
-FROM clientes
-GROUP BY Escolaridade
-ORDER BY COUNT(Escolaridade) DESC;
 
-/*
-SELECT Data_Nascimento as "Nascimento" 
-FROM clientes
-ORDER BY Data_Nascimento DESC
-LIMIT 5;
 
--- selecionando dados vazios
 SELECT 
-	Nome, Sobrenome, Telefone
-FROM clientes
-WHERE Telefone IS NULL
-ORDER BY Nome;
+	c.Nome
+    , c.Sobrenome
+    , c.Renda_Anual
+    , p.Receita_Venda
+FROM clientes c
+	RIGHT JOIN pedidos p
+		ON c.ID_Cliente = p.ID_Cliente
+;
 
-SELECT * FROM produtos
-ORDER BY Preco_unit DESC; #DEFAULT ASC
 
-*/
+-- TRUNCATE TABLE
+USE banco;
+
+DROP TABLE IF EXISTS books;
+CREATE TABLE books (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL
+);
+
+DELIMITER $$
+CREATE PROCEDURE load_book_data(IN num INT(4))
+BEGIN
+	DECLARE counter INT(4) DEFAULT 0;
+	DECLARE book_title VARCHAR(255) DEFAULT '';
+
+	WHILE counter < num DO
+	  SET book_title = CONCAT('Book title #',counter);
+	  SET counter = counter + 1;
+
+	  INSERT INTO books(title)
+	  VALUES(book_title);
+	END WHILE;
+END$$
+DELIMITER ;
+
+CALL load_book_data(10000);
+SELECT * FROM banco.books;
+
+TRUNCATE TABLE banco.books;
+
+SELECT * FROM banco.books;
