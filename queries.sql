@@ -119,8 +119,6 @@ FROM clientes c
 
 
 -- TRUNCATE TABLE
-USE banco;
-
 DROP TABLE IF EXISTS books;
 CREATE TABLE books (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -149,3 +147,62 @@ SELECT * FROM banco.books;
 TRUNCATE TABLE banco.books;
 
 SELECT * FROM banco.books;
+SELECT * FROM banco.produtos;
+
+SELECT p.ID_Produto,
+	   prod.Nome_Produto AS "Produto", prod.Marca_Produto AS "Marca"
+FROM pedidos p
+	LEFT JOIN produtos prod
+    ON p.ID_Produto = prod.ID_Produto
+;
+
+
+-- PROCEDURES
+-- Procedure para criação de login de usuários
+DELIMITER &&
+CREATE PROCEDURE registros(IN idCliente INT, OUT resultado VARCHAR(50))
+BEGIN
+
+    DECLARE nomeCliente VARCHAR(50);
+    DECLARE sobrenomeCliente VARCHAR(50);
+    
+    -- seleciona o nome do cliente
+    SET nomeCliente = (SELECT Nome FROM clientes WHERE idCliente = ID_Cliente);
+    -- seleciona o sobrenome do cliente
+    SET sobrenomeCliente = (SELECT Sobrenome FROM clientes WHERE idCliente = ID_Cliente);
+    
+    -- concatena o nome com o sobrenome e gera um login
+    SET resultado = CONCAT(nomeCliente, ".", sobrenomeCliente);
+    
+END &&
+
+DELIMITER ;
+
+CALL registros(15, @resultado);
+SELECT @resultado AS LoginCliente;
+
+SELECT * FROM clientes;
+
+
+
+
+DROP PROCEDURE IF EXISTS idade;
+DELIMITER &&
+CREATE PROCEDURE idade(IN idCliente INT, OUT idade INT, OUT res VARCHAR(20))
+BEGIN
+	DECLARE dt INT;
+    
+    SET dt = (SELECT CAST(EXTRACT(YEAR FROM Data_Nascimento) AS REAL) FROM clientes WHERE idCliente = ID_Cliente);
+    SET idade = YEAR(NOW()) - dt;
+    
+    IF (idade >= 18) THEN
+		SET res = 'Maior';
+	ELSE
+		SET res = 'Menor';
+	END IF;
+END &&
+
+DELIMITER ;
+
+CALL idade(2, @idadecliente, @resultado);
+SELECT @idadecliente,@resultado;
