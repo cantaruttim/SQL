@@ -200,9 +200,81 @@ BEGIN
 	ELSE
 		SET res = 'Menor';
 	END IF;
+
+
 END &&
 
 DELIMITER ;
 
 CALL idade(2, @idadecliente, @resultado);
 SELECT @idadecliente,@resultado;
+
+
+
+
+
+
+
+-----------------------------------------------------------
+
+-- TABLES
+CREATE TABLE client (
+	Client_ID INT PRIMARY KEY,
+  	Name VARCHAR(100),
+    Surname VARCHAR(100),
+    Age INT,
+    Gender CHAR(1)
+);
+
+CREATE TABLE sales (
+	Sales_ID INT PRIMARY KEY,
+    data_venda VARCHAR(10),
+    hora_venda VARCHAR(10),
+    pk_cliente INT,
+  	FOREIGN KEY (pk_cliente) REFERENCES client(Client_ID) 
+);
+
+-- CLIENT TABLE
+INSERT INTO client VALUES (1, "Matheus", "Barbosa", 15, "M");
+INSERT INTO client VALUES (2, "Lucas", "Feitosa", 23, "M");
+INSERT INTO client VALUES (3, "Fernanda", "Fernandez", 35, "F");
+INSERT INTO client VALUES (4, "Júlia", "Silva", 40, "F");
+INSERT INTO client VALUES (5, "Bruna", "Teixeira", 33, "F");
+INSERT INTO client VALUES (6, "Vitor", "Santos", 15, "M");
+INSERT INTO client VALUES (7, "Victória", "Gular", 25, "F");
+INSERT INTO client VALUES (8, "Fernando", "Daniel", 23, "M");
+INSERT INTO client VALUES (9, "Alef", "Almeida", 68, "M");
+INSERT INTO client VALUES (10, "Alexandra", "Silva", 55, "F");
+INSERT INTO client VALUES (11, "Lucas", "Barbosa", 24, "M");
+INSERT INTO client VALUES (12, "Suzana", "Xavier", 55, "F");
+INSERT INTO client VALUES (13, "Wellington", "Justos", 45, "M");
+INSERT INTO client VALUES (14, "Silvio", "Oliveira", 35, "M");
+INSERT INTO client VALUES (15, "Selma", "Almeida", 23, "F");
+
+
+-- SALE TABLE
+INSERT INTO sales VALUES (1, "26-12-2023", "09:10", 1);
+INSERT INTO sales VALUES (2, "26-12-2023", "09:15", 2);
+INSERT INTO sales VALUES (3, "26-12-2023", "09:30", 3);
+INSERT INTO sales VALUES (4, "26-12-2023", "09:40", 4);
+INSERT INTO sales VALUES (5, "26-12-2023", "09:45", 6);
+INSERT INTO sales VALUES (6, "26-12-2023", "10:00", 5);
+INSERT INTO sales VALUES (7, "26-12-2023", "10:05", 7);
+INSERT INTO sales VALUES (8, "26-12-2023", "10:10", 8);
+INSERT INTO sales VALUES (9, "26-12-2023", "10:20", 9);
+INSERT INTO sales VALUES (10, "26-12-2023", "10:30", 10);
+INSERT INTO sales VALUES (11, "26-12-2023", "10:31", 11);
+INSERT INTO sales VALUES (12, "26-12-2023", "10:32", 13);
+INSERT INTO sales VALUES (13, "26-12-2023", "10:33", 4);
+INSERT INTO sales VALUES (14, "26-12-2023", "10:33", 2);
+INSERT INTO sales VALUES (15, "26-12-2023", "10:35", 3);
+INSERT INTO sales VALUES (16, "26-12-2023", "10:35", 7);
+INSERT INTO sales VALUES (17, "26-12-2023", "11:30", 6);
+INSERT INTO sales VALUES (18, "26-12-2023", "12:00", 5);
+INSERT INTO sales VALUES (19, "26-12-2023", "12:10", 4);
+INSERT INTO sales VALUES (20, "26-12-2023", "12:10", 2);
+INSERT INTO sales VALUES (21, "26-12-2023", "12:35", 3);
+INSERT INTO sales VALUES (22, "26-12-2023", "13:00", 4);
+INSERT INTO sales VALUES (23, "26-12-2023", "13:10", 5);
+INSERT INTO sales VALUES (24, "26-12-2023", "13:15", 6);
+INSERT INTO sales VALUES (25, "26-12-2023", "13:20", 8);
